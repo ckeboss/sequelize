@@ -244,8 +244,8 @@ class AbstractQuery {
     // Map raw fields to names if a mapping is provided
     if (this.options.fieldMap) {
       const fieldMap = this.options.fieldMap;
-      results = results.map(result =>
-        _.reduce(
+      results = results.map(result => {
+        let o = _.reduce(
           fieldMap,
           (result, name, field) => {
             if (result[field] !== undefined && name !== field) {
@@ -255,8 +255,12 @@ class AbstractQuery {
             return result;
           },
           result
-        )
-      );
+        );
+        if (this.options.nest) {
+          o = Dot.transform(o);
+        }
+        return o;
+      });
     }
 
     // Raw queries
